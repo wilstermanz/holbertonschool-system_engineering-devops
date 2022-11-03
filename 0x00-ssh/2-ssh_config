@@ -1,5 +1,3 @@
-Host 3.80.117.222
-    HostName 3.80.117.222
-    User ubuntu
+Host ubuntu@3.80.117.222
     IdentityFile ~/.ssh/school
     BatchMode yes
