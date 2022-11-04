@@ -8,4 +8,4 @@ sudo apt-get -y update
 sudo apt-get -y install nginx
 sudo rm /var/www/html/*.html
 sudo touch /var/www/html/index.html
-echo "Hello World!" | sudo tee /var/www/html/index.html
+echo "Hello World" | sudo tee /var/www/html/index.html
