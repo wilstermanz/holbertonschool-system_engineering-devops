@@ -6,6 +6,7 @@
 # You can’t use systemctl for restarting nginx
 sudo apt-get -y update
 sudo apt-get -y install nginx
+sudo service nginx restart
 sudo rm /var/www/html/*.html
 sudo touch /var/www/html/index.html
 echo "Hello World" | sudo tee /var/www/html/index.html
