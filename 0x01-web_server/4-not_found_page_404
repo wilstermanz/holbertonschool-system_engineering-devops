@@ -6,12 +6,15 @@
 # You can’t use systemctl for restarting nginx
 
 find="^\tlocation / {"
-replace="\tlocation /redirect_me {\n\t\treturn 301 \@scheme://youtube.com/watch?v=QH2-TGUlwu4;\n\t}\n\n\tlocation / {"
+err404="\tlocation /redirect_me {\n\t\treturn 301 \@scheme://youtube.com/watch?v=QH2-TGUlwu4;\n\t}\n\n\tlocation / {"
+err301="\terror_page 404 /error404.html;\n\n\tlocation / {"
 
 sudo apt-get -y update
 sudo apt-get install -y nginx
 sudo rm /var/www/html/*.html
 sudo echo "Hello World" | sudo tee /var/www/html/index.html
-sudo sed -i "s|$find|$replace|" /etc/nginx/sites-available/default
+sudo echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+sudo sed -i "s|$find|$err301|" /etc/nginx/sites-available/default
+sudo sed -i "s|$find|$err404|" /etc/nginx/sites-available/default
 sudo service nginx restart
 sudo service nginx reload
