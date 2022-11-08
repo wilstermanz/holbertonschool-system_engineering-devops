@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Configures nginx on a new server so that its HTTP response contains a custom header
+# where the name of the custom header is 'X-Served-By'
+# and the value is the hostname of the Nginx is running on
+FIND='^server {'
+REPLACE='server {\n\tadd_header X-Served-By "\$hostname";'
+sudo sed -i "s|$FIND|$REPLACE|" /etc/nginx/sites-available/default
+sudo service nginx restart
+sudo service nginx reload
