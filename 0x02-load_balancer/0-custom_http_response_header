@@ -1,17 +1,23 @@
+
 #!/usr/bin/env bash
-# Configures nginx on a new server so that its HTTP response contains a custom header
-# where the name of the custom header is 'X-Served-By'
-# and the value is the hostname of the Nginx is running on
-FINDLOC="^\tlocation / {"
-REPLACELOC="\terror_page 404 /404.html;\n\n\tlocation /redirect_me {\n\t\treturn 301 https://youtube.com/watch?v=QH2-TGUlwu4;\n\t}\n\n\tlocation / {"
-FINDSERVER='^server {'
-REPLACESERVER='server {\n\tadd_header X-Served-By "\$hostname";'
+# This script installs nginx on 4905-web-nn web server
+# This script creates a custom HTTP header named X-Served-By
+# The value of X-Served-By is the hostname of the server Nginx is running on
+# 
+
+find="^\tlocation / {"
+replace301="\tlocation /redirect_me {\n\t\treturn 301 \$scheme://youtube.com/watch?v=QH2-TGUlwu4;\n\t}\n\n\tlocation / {"
+replace404="\terror_page 404 /error404.html;\n\n\tlocation / {"
+add_header="\tlocation / {\n\t\tadd_header X-Served-By "$HOSTNAME";"
+
 sudo apt-get -y update
+sudo apt-get -y upgrade
 sudo apt-get install -y nginx
 sudo rm /var/www/html/*.html
 sudo echo "Hello World" | sudo tee /var/www/html/index.html
-sudo echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
-sudo sed -i "s|$FINDLOC|$REPLACELOC|" /etc/nginx/sites-available/default
-sudo sed -i "s|$FINDSERVER|$REPLACESERVER|" /etc/nginx/sites-available/default
+sudo echo "Ceci n'est pas une page" | sudo tee /var/www/html/error404.html
+sudo sed -i "s|$find|$replace301|" /etc/nginx/sites-available/default
+sudo sed -i "s|$find|$replace404|" /etc/nginx/sites-available/default
+sudo sed -i "s|$find|$add_header|" /etc/nginx/sites-available/default
 sudo service nginx restart
 sudo service nginx reload
