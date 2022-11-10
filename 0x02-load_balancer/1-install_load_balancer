@@ -1,14 +1,22 @@
 #!/usr/bin/env bash
-# Configure HAproxy so that it send traffic to web-01 and web-02
-# Distribute requests using a roundrobin algorithm
-# Make sure that HAproxy can be managed via an init script
+# This script installs nginx on 4905-web-nn web server
+# This script creates a custom HTTP header named X-Served-By
+# The value of X-Served-By is the hostname of the server Nginx is running on
+# 
 
-FRONTEND="frontend myfrontend\n\tbind :80\n\tmode http\n\tdefault_backend myservers\n"
-BACKEND="backend myservers\n\tbalance roundrobin\n\tserver 4917-web-01 54.173.52.0:80\n\tserver 4917-web-02 34.228.62.3\n"
+find="^\tlocation / {"
+replace301="\tlocation /redirect_me {\n\t\treturn 301 \$scheme://youtube.com/watch?v=QH2-TGUlwu4;\n\t}\n\n\tlocation / {"
+replace404="\terror_page 404 /error404.html;\n\n\tlocation / {"
+add_header="\tlocation / {\n\t\tadd_header X-Served-By "$HOSTNAME";"
 
 sudo apt-get -y update
-sudo apt-get -y install haproxy
-sudo /etc/init.d/haproxy start
-echo "ENABLED=1\n" | sudo tee -a /etc/default/haproxy
-echo -e "\n$FRONTEND\n$BACKEND\n" | sudo tee -a /etc/haproxy/haproxy.cfg
-sudo /etc/init.d/haproxy restart
+sudo apt-get -y upgrade
+sudo apt-get install -y nginx
+sudo rm /var/www/html/*.html
+sudo echo "Hello World" | sudo tee /var/www/html/index.html
+sudo echo "Ceci n'est pas une page" | sudo tee /var/www/html/error404.html
+sudo sed -i "s|$find|$replace301|" /etc/nginx/sites-available/default
+sudo sed -i "s|$find|$replace404|" /etc/nginx/sites-available/default
+sudo sed -i "s|$find|$add_header|" /etc/nginx/sites-available/default
+sudo service nginx restart
+sudo service nginx reload
