@@ -3,8 +3,8 @@
 This script uses an api to return a TODO list using
 a given employee ID
 """
-import requests
 import json
+import requests
 from sys import argv
 
 
